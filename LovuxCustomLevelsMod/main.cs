@@ -16,6 +16,12 @@ namespace LovuxPatcher
             ModVersion = Info.Version;
             MelonLogger.Msg("Version: " + ModVersion);
 
+            var harmony = new HarmonyLib.Harmony("com.bud3699.lovux.patch");
+            //harmony.PatchAll(Assembly.GetExecutingAssembly());
+            MelonLogger.Msg("Harmony initialized!");
+
+            DirectorPatches.ApplyPatch(harmony);
+            MelonLogger.Msg("Manual patch for Director applied!");
         }
     }
 }
