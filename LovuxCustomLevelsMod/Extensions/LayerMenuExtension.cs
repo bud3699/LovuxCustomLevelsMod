@@ -255,7 +255,7 @@ public static class LayerMenuExtensions
 
             inputField = inputObj.GetComponent<InputField>();
             inputField.textComponent = inputText;
-            inputField.text = "3MPYMS";
+            inputField.text = "5LOR1L";
 
 
             versionTextObj = new GameObject("ModVersionText", typeof(RectTransform), typeof(CanvasRenderer), typeof(Text));

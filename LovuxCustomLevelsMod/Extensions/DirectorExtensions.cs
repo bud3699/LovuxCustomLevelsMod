@@ -64,34 +64,12 @@ namespace LovuxPatcher
 
             AccessTools.Method(directorInstance.GetType(), "InitCommonSystems")?.Invoke(directorInstance, null);
 
-            object heartContainer = traverse.Field("heartContainer").GetValue();
-            int moveCount = (int)Traverse.Create(gameLevel).Field("moveCount").GetValue();
-            if (heartContainer != null)
-            {
-                AccessTools.Method(heartContainer.GetType(), "HideOperations")?.Invoke(heartContainer, null);
-                AccessTools.Method(heartContainer.GetType(), "Init")?.Invoke(heartContainer, new object[] { moveCount });
-            }
-            else Debug.LogWarning("HeartContainer is null!");
-
-            object gridLines = AccessTools.Field(AccessTools.TypeByName("GridLines"), "instance")?.GetValue(null);
-            bool reversed = (bool)Traverse.Create(gameLevel).Field("reversed").GetValue();
-            if (gridLines != null)
-                AccessTools.Method(gridLines.GetType(), "SetReversedLine")?.Invoke(gridLines, new object[] { reversed });
-            else
-                Debug.LogWarning("GridLines instance is null!");
-
-            object openingField = traverse.Field("opening").GetValue();
-            AccessTools.Method(AccessTools.TypeByName("LevelAnimation"), "OpenLevel")?.Invoke(null, new object[] { openingField });
+            var openingField = traverse.Field("opening").GetValue();
+            AccessTools.Method(typeof(LevelAnimation), "OpenLevel")?.Invoke(null, new object[] { openingField });
 
             traverse.Field("editingGameLevel").SetValue(null);
 
             AccessTools.Method(directorInstance.GetType(), "InitEntitiesAndCropGrid")?.Invoke(directorInstance, null);
-
-            object movementManager = traverse.Field("movementManager").GetValue();
-            if (movementManager != null)
-                AccessTools.Method(movementManager.GetType(), "Init")?.Invoke(movementManager, new object[] { moveCount, reversed });
-            else
-                Debug.LogWarning("MovementManager is null!");
 
             object replayManager = traverse.Field("replayManager").GetValue();
             if (replayManager != null)

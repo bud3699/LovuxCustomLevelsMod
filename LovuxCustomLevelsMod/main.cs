@@ -22,6 +22,9 @@ namespace LovuxPatcher
 
             DirectorPatches.ApplyPatch(harmony);
             MelonLogger.Msg("Manual patch for Director applied!");
+
+            MenuButtonSandboxPatches.ApplyPatch(harmony);
+            MelonLogger.Msg("Patched MenuButtonSandbox to allow icon changes");
         }
     }
 }
