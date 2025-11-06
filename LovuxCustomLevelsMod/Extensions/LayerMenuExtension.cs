@@ -128,9 +128,9 @@ public static class LayerMenuExtensions
             return;
         }
 
-        if (customLevelUIRoot == null)
+        if (customLevelUIRoot == null && SteamApps.BIsDlcInstalled((AppId_t)3895810u))
         {
-            customLevelUIRoot = new GameObject("CustomLevelCompleteUI");
+            customLevelUIRoot = new GameObject("CustomLevelSection");
             customLevelUIRoot.transform.SetParent(UIManager.instance.menuLayer.transform, false);
 
             Sprite menuSprite = Resources.FindObjectsOfTypeAll<Sprite>().FirstOrDefault(s => s.name == "Menu");
