@@ -238,7 +238,10 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Data\GameLevelData.cs" />
+    <Compile Include="Data\UIController.cs" />
     <Compile Include="Extensions\DirectorExtensions.cs" />
+    <Compile Include="Extensions\LayerMenuExtended.cs" />
+    <Compile Include="Patches\LayerMenuPatches.cs" />
     <Compile Include="Extensions\LevelGameBuilderExtension.cs" />
     <Compile Include="main.cs" />
     <Compile Include="Patches\DirectorPatches.cs" />
