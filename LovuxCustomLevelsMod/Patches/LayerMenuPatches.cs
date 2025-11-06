@@ -12,14 +12,8 @@ namespace LovuxPatcher
     [HarmonyPatch]
     public static class LayerMenuPatch
     {
-        [HarmonyPatch(typeof(LayerMenu), "ChangeLevelSelectSize")]
-        [HarmonyPrefix]
-        public static bool Prefix_LayerMenu_ChangeLevelSelectSize(object __instance, Vector2 size, float time, Ease ease)
-        {
-            __instance.ChangeLevelSelectSizeExtended(size, time, ease);
-            return false;
-        }
 
+        /*
         [HarmonyPatch(typeof(LayerMenu), "CalculateMenu")]
         [HarmonyPrefix]
         public static bool Prefix_LayerMenu_CalculateMenu(object __instance)
@@ -27,6 +21,7 @@ namespace LovuxPatcher
             __instance.CalculateMenuExtended();
             return false;
         }
+        */
 
         [HarmonyPatch(typeof(LayerMenu), "OpenMenu")]
         [HarmonyPostfix]
@@ -34,11 +29,9 @@ namespace LovuxPatcher
         {
             Debug.Log("Opening Menu");
             UIController.DelayedTweenMenuElements(Director.instance, true, 0.8f, 0.3f,
-                LayerMenuExtensions.loadButtonObj?.transform,
                 LayerMenuExtensions.inputField?.transform,
                 LayerMenuExtensions.customLevelUIRoot?.transform,
-                LayerMenuExtensions.versionTextObj?.transform,
-                LayerMenuExtensions.borderObj?.transform);
+                LayerMenuExtensions.versionTextObj?.transform);
         }
 
         [HarmonyPatch(typeof(LayerMenu), "CloseMenu")]
@@ -46,15 +39,20 @@ namespace LovuxPatcher
         public static void Postfix_LayerMenu_CloseMenu(LayerMenu __instance)
         {
             UIController.DelayedTweenMenuElements(Director.instance, false, 0.2f, 0.3f,
-                LayerMenuExtensions.loadButtonObj?.transform,
                 LayerMenuExtensions.inputField?.transform,
                 LayerMenuExtensions.customLevelUIRoot?.transform,
-                LayerMenuExtensions.versionTextObj?.transform,
-                LayerMenuExtensions.borderObj?.transform);
+                LayerMenuExtensions.versionTextObj?.transform);
+        }
+
+        [HarmonyPatch(typeof(LayerMenu), "CalculateMenu")]
+        [HarmonyPostfix]
+        public static void Postfix_LayerMenu_CalculateMenu(LayerMenu __instance)
+        {
+            LayerMenuExtensions.CreateCustomLevelLoadButtonUI();
         }
 
 
-
+        
         public static void ApplyPatch(HarmonyLib.Harmony harmony)
         {
             var originalStart = AccessTools.Method(typeof(LayerMenu), "Start");

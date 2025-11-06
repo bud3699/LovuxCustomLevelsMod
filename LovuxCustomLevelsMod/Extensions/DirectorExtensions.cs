@@ -60,8 +60,6 @@ namespace LovuxPatcher
             }
             //DiscordManagerPatches.LevelCodeDiscord = LevelCode;
 
-            AccessTools.TypeByName("LevelNumber")?.GetMethod("ChangeLevelText")?.Invoke(null, new object[] { LevelCode });
-
             AccessTools.Method(directorInstance.GetType(), "InitCommonSystems")?.Invoke(directorInstance, null);
 
             var openingField = traverse.Field("opening").GetValue();
@@ -76,8 +74,6 @@ namespace LovuxPatcher
                 AccessTools.Method(replayManager.GetType(), "Init")?.Invoke(replayManager, null);
             else
                 Debug.LogWarning("ReplayManager is null!");
-
-            AccessTools.Method(directorInstance.GetType(), "InitVisuals")?.Invoke(directorInstance, null);
         }
     }
 }

@@ -14,10 +14,8 @@ using UnityEngine.UI;
 public static class LayerMenuExtensions
 {
 
-    public static GameObject loadButtonObj;
     public static InputField inputField;
     public static GameObject versionTextObj;
-    public static GameObject borderObj;
 
     public static GameObject customLevelLoadButtonObj;
     public static GameObject customLevelUIRoot;
@@ -33,45 +31,7 @@ public static class LayerMenuExtensions
         if (buttonIcon != null) { buttonIcon.sprite = sprite; }
     }
 
-    public static void ChangeLevelSelectSizeExtended(this object layerMenuInstance, Vector2 size, float time, Ease ease)
-    {
-        var traverse = Traverse.Create(layerMenuInstance);
-
-        var levelSelectArea = traverse.Field("levelSelectArea").GetValue<RectTransform>();
-        var levelButtons = traverse.Field("levelButtons").GetValue<List<ComponentButton>>();
-
-        if (levelSelectArea == null)
-        {
-            Debug.LogError("[Patch] levelSelectArea is null — aborting ChangeLevelSelectSizeExtended");
-            return;
-        }
-
-        if (levelButtons == null)
-        {
-            Debug.LogError("[Patch] levelButtons is null — aborting ChangeLevelSelectSizeExtended");
-            return;
-        }
-
-        int gameMode = (int)Traverse.Create(typeof(Director)).Field("gameMode").GetValue();
-        int levelIndex = LevelManager.levelIndex;
-
-        if ((gameMode != 0 && gameMode != 3 && size.x > 0f) || levelIndex < 1 || levelIndex > 90)
-        {
-            return;
-        }
-
-        levelSelectArea.DOSizeDelta(size, time).SetEase(ease).OnComplete(() =>
-        {
-            foreach (var levelButton in levelButtons)
-            {
-                if (levelButton != null)
-                {
-                    AccessTools.Method(levelButton.GetType(), "Init")?.Invoke(levelButton, new object[] { levelIndex });
-                }
-            }
-        }).Play();
-    }
-
+    /*
     public static void CalculateMenuExtended(this object layerMenuInstance)
     {
         Debug.Log("Using Extended Calculate Menu");
@@ -158,6 +118,7 @@ public static class LayerMenuExtensions
 
         CreateCustomLevelLoadButtonUI();
     }
+    */
 
     public static void CreateCustomLevelLoadButtonUI()
     {
