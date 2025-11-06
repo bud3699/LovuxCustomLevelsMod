@@ -222,14 +222,14 @@ public static class LayerMenuExtensions
             versionTextObj = new GameObject("ModVersionText", typeof(RectTransform), typeof(CanvasRenderer), typeof(Text));
             RectTransform versionTextRect = versionTextObj.GetComponent<RectTransform>();
             versionTextObj.transform.SetParent(customLevelUIRoot.transform, false);
-            versionTextRect.sizeDelta = new Vector2(200, 30);
+            versionTextRect.sizeDelta = new Vector2(300, 30);
             versionTextRect.anchorMin = new Vector2(0.5f, 0f);
             versionTextRect.anchorMax = new Vector2(0.5f, 0f);
             versionTextRect.pivot = new Vector2(0.5f, 0f);
-            versionTextRect.anchoredPosition = new Vector2(-25f, 2f);
+            versionTextRect.anchoredPosition = new Vector2(-30f, 2f);
 
             Text versionText = versionTextObj.GetComponent<Text>();
-            versionText.text = $"Current Mod Version: {Main.ModVersion}";
+            versionText.text = $"Mod Version: {Main.ModVersion}   |   Mod by: bud3699";
             versionText.alignment = TextAnchor.MiddleRight;
             versionText.font = Resources.GetBuiltinResource<Font>("Arial.ttf");
             versionText.color = new Color(0.5f, 0.5f, 0.5f);
