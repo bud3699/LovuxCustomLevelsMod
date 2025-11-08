@@ -8,6 +8,7 @@ namespace LovuxPatcher
 {
     public static class LevelGameBuilderExtensions
     {
+        public static object CurrentGameLevelObject {get; private set;}
         public static void InitCustomLevelFromCode(this object instance, string levelCode, out object currentGameLevel)
         {
             currentGameLevel = null;
@@ -70,7 +71,7 @@ namespace LovuxPatcher
                 traverse.Method("LoadLevel", new object[] { gameLevel }).GetValue();
                 Debug.Log($"<color=green>[InitCustomLevelFromCode] Called LoadLevel method.</color>");
 
-                currentGameLevel = gameLevel;
+                currentGameLevel = CurrentGameLevelObject = gameLevel;
 
                 Debug.Log($"<color=green>[InitCustomLevelFromCode] Custom level loaded from code '{levelCode}'!</color>");
             }

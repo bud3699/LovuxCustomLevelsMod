@@ -1,24 +1,19 @@
 ﻿using HarmonyLib;
 using Mindlabor.Utils;
-
+using UnityEngine;
 
 namespace LovuxPatcher
 {
+    [HarmonyPatch(typeof(LevelManager))]
     public static class LevelManagerPatches
     {
-        [HarmonyPatch(typeof(LevelManager), "CompleteLevelCoroutine")]
-        [HarmonyPostfix]
-        public static void Postfix_LevelManager_CompleteLevelCoroutine()
+        [HarmonyPatch("CompleteLevelCoroutine")]
+        [HarmonyPrefix]
+        public static bool Prefix_LevelManager_CompleteLevelCoroutine()
         {
-            if (Director.gameMode == GameMode.Game)
-            {
-                AudioManager.instance?.PlaySFX(Director.instance.success);
-                LevelAnimation.isLevelLoading = true;
-                
-
-                //load level co-routine here to reload finished level
-
-            }
+            Debug.LogWarning("[LovuxPatcher] Prefix hit: Finished Level CoRoutine");
+            CoroutineUtils.RunCoroutine(LevelManagerExtension.HandleGameModeLevelLoad());
+            return false;
         }
     }
 }
