@@ -1,11 +1,9 @@
 ﻿using HarmonyLib;
-using UnityEngine;
-using DG.Tweening;
+using Steamworks;
 using System.Collections.Generic;
 using System.Reflection.Emit;
-using System.Reflection;
+using UnityEngine;
 using UnityEngine.InputSystem;
-using Discord;
 
 namespace LovuxPatcher
 {
@@ -48,7 +46,8 @@ namespace LovuxPatcher
         [HarmonyPostfix]
         public static void Postfix_LayerMenu_CalculateMenu(LayerMenu __instance)
         {
-            LayerMenuExtensions.CreateCustomLevelLoadButtonUI();
+            if (SteamApps.BIsDlcInstalled((AppId_t)3895810u)) { LayerMenuExtensions.CreateCustomLevelLoadButtonUI(); }
+            
         }
 
 
