@@ -9,8 +9,6 @@ using UnityEngine;
 public class LevelData
 {
     public string entityData;
-    public int moveCount;
-    public bool reversed;
     public string uuid;
     public string code;
     public string description;
@@ -102,8 +100,6 @@ public static class SaveManagerCustom
                 title = "Default Level",
                 description = "A basic starting level.",
                 entityData = "{}",
-                moveCount = 0,
-                reversed = false
             };
             _levelsDict["level_1"] = defaultLevel;
 
