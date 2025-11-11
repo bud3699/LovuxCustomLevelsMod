@@ -58,7 +58,7 @@ namespace LovuxPatcher
                 Debug.LogError("Failed to load custom level — aborting LoadCustomLevel!");
                 return;
             }
-            //DiscordManagerPatches.LevelCodeDiscord = LevelCode;
+            DiscordManagerPatches.LevelCodeDiscord = LevelCode;
 
             AccessTools.Method(directorInstance.GetType(), "InitCommonSystems")?.Invoke(directorInstance, null);
 

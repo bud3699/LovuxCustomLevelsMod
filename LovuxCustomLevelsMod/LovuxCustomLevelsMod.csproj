@@ -316,6 +316,8 @@
     <Compile Include="Extensions\LayerMenuExtension.cs" />
     <Compile Include="Extensions\LevelManagerExtension.cs" />
     <Compile Include="Extensions\MenuButtonSandboxExtension.cs" />
+    <Compile Include="Patches\AchievementPatcher.cs" />
+    <Compile Include="Patches\DiscordManagerPatches.cs" />
     <Compile Include="Patches\LayerMenuPatches.cs" />
     <Compile Include="Extensions\LevelGameBuilderExtension.cs" />
     <Compile Include="main.cs" />
