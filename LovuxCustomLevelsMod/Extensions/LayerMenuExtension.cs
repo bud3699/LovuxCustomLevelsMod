@@ -20,6 +20,9 @@ public static class LayerMenuExtensions
     public static GameObject customLevelLoadButtonObj;
     public static GameObject customLevelUIRoot;
 
+    public static GameObject customLevelCodeRoot;
+
+    private static Text levelCodeText;
 
     private static IEnumerator WaitAndChangeSprite(MenuButtonSandbox sandboxBtn, Sprite sprite)
     {
@@ -256,7 +259,66 @@ public static class LayerMenuExtensions
         }
     }
 
+    public static void CreateLevelCodeUI()
+    {
+        if (UIManager.instance == null || UIManager.instance.menuLayer == null)
+        {
+            Debug.LogWarning("No active menu layer or UIManager instance.");
+            return;
+        }
 
+        customLevelCodeRoot = new GameObject("LevelCodeUIRoot");
+        customLevelCodeRoot.transform.SetParent(UIManager.instance.menuLayer.transform, false);
+
+        Sprite menuSprite = Resources.FindObjectsOfTypeAll<Sprite>().FirstOrDefault(s => s.name == "Menu");
+        if (menuSprite == null)
+        {
+            Debug.LogError("Menu sprite not found.");
+            return;
+        }
+
+        var bg = customLevelCodeRoot.AddComponent<Image>();
+        bg.sprite = menuSprite;
+        bg.type = Image.Type.Sliced;
+        bg.color = Color.white;
+
+        var bgRect = customLevelCodeRoot.GetComponent<RectTransform>();
+        bgRect.anchorMin = new Vector2(1f, 1f);
+        bgRect.anchorMax = new Vector2(1f, 1f);
+        bgRect.pivot = new Vector2(1f, 1f);
+        bgRect.anchoredPosition = new Vector2(-75f, -140f);
+        bgRect.sizeDelta = new Vector2(220f, 60f);
+        bgRect.localScale = Vector3.zero;
+
+        GameObject textObj = new GameObject("LevelCodeText", typeof(RectTransform), typeof(CanvasRenderer), typeof(Text));
+        textObj.transform.SetParent(customLevelCodeRoot.transform, false);
+
+        RectTransform textRect = textObj.GetComponent<RectTransform>();
+        textRect.anchorMin = Vector2.zero;
+        textRect.anchorMax = Vector2.one;
+        textRect.pivot = new Vector2(0.5f, 0.5f);
+        textRect.anchoredPosition = Vector2.zero;
+        textRect.sizeDelta = Vector2.zero;
+
+        levelCodeText = textObj.GetComponent<Text>();
+        levelCodeText.text = "";
+        levelCodeText.alignment = TextAnchor.MiddleCenter;
+        levelCodeText.font = Resources.GetBuiltinResource<Font>("Arial.ttf");
+        levelCodeText.color = Color.black;
+        levelCodeText.fontSize = 28;
+    }
+
+    public static void SetLevelCodeText(string newText)
+    {
+        if (levelCodeText != null)
+        {
+            levelCodeText.text = newText;
+        }
+        else
+        {
+            Debug.LogWarning("LevelCodeText not initialized.");
+        }
+    }
 
 
     private static IEnumerator LoadCustomLevelCoroutine(InputField inputField, MenuButtonSandbox sandboxBtn, Dictionary<GameMode, (GameMode targetMode, Sprite targetIcon)> toggleMapping)
@@ -268,7 +330,7 @@ public static class LayerMenuExtensions
             Debug.Log("Got value of: " + mapping.targetMode.ToString());
         }*/
         Director.gameMode = (GameMode)3;
-        //DiscordManagerPatches.LevelCodeDiscord = null;
+        DiscordManagerPatches.LevelCodeDiscord = null;
         UIManager.instance?.menuLayer.CloseMenu();
 
         LevelAnimation.isLevelLoading = true;

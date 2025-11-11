@@ -74,6 +74,9 @@ namespace LovuxPatcher
                 AccessTools.Method(replayManager.GetType(), "Init")?.Invoke(replayManager, null);
             else
                 Debug.LogWarning("ReplayManager is null!");
+
+            LayerMenuExtensions.SetLevelCodeText(LevelCode);
+
         }
     }
 }

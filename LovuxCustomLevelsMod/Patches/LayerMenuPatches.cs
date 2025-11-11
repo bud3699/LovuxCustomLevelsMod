@@ -26,11 +26,16 @@ namespace LovuxPatcher
         public static void Postfix_LayerMenu_OpenMenu(LayerMenu __instance, InputAction.CallbackContext ctx)
         {
             Debug.Log("Opening Menu");
-            UIController.DelayedTweenMenuElements(Director.instance, true, 0.8f, 0.3f,
-                LayerMenuExtensions.inputField?.transform,
-                LayerMenuExtensions.customLevelUIRoot?.transform,
-                LayerMenuExtensions.versionTextObj?.transform);
+            var elements = new List<Transform>
+                {
+                    LayerMenuExtensions.inputField?.transform,
+                    LayerMenuExtensions.customLevelUIRoot?.transform,
+                    LayerMenuExtensions.versionTextObj?.transform
+                };
+            if (Director.gameMode == (GameMode)3) elements.Add(LayerMenuExtensions.customLevelCodeRoot?.transform);
+            UIController.DelayedTweenMenuElements(Director.instance, true, 0.8f, 0.3f, elements.ToArray());
         }
+
 
         [HarmonyPatch(typeof(LayerMenu), "CloseMenu")]
         [HarmonyPostfix]
@@ -39,14 +44,15 @@ namespace LovuxPatcher
             UIController.DelayedTweenMenuElements(Director.instance, false, 0.2f, 0.3f,
                 LayerMenuExtensions.inputField?.transform,
                 LayerMenuExtensions.customLevelUIRoot?.transform,
-                LayerMenuExtensions.versionTextObj?.transform);
+                LayerMenuExtensions.versionTextObj?.transform,
+                LayerMenuExtensions.customLevelCodeRoot?.transform);
         }
 
         [HarmonyPatch(typeof(LayerMenu), "CalculateMenu")]
         [HarmonyPostfix]
         public static void Postfix_LayerMenu_CalculateMenu(LayerMenu __instance)
         {
-            if (SteamApps.BIsDlcInstalled((AppId_t)3895810u)) { LayerMenuExtensions.CreateCustomLevelLoadButtonUI(); }
+            if (SteamApps.BIsDlcInstalled((AppId_t)3895810u)) { LayerMenuExtensions.CreateCustomLevelLoadButtonUI(); LayerMenuExtensions.CreateLevelCodeUI(); }
             
         }
 
