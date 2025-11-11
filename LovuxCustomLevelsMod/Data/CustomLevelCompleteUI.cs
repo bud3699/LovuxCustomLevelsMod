@@ -274,72 +274,18 @@ namespace LovuxPatcher
                     $"\"publicKey\":\"{SaveManagerCustom.CurrentData.publicKey}\"," +
                     $"\"signature\":\"{signature}\"}}";
 
-                try
-                {
-                    var request = (HttpWebRequest)WebRequest.Create("http://127.0.0.1:7000/lovux/api/levels");
-                    request.Method = "POST";
-                    request.ContentType = "application/json";
-
-                    byte[] bytes = Encoding.UTF8.GetBytes(finalJson);
-                    request.ContentLength = bytes.Length;
-
-                    using (var stream = request.GetRequestStream())
-                        stream.Write(bytes, 0, bytes.Length);
-
-                    var response = (HttpWebResponse)request.GetResponse();
-                    using (var reader = new StreamReader(response.GetResponseStream()))
+                rootRect.DOScale(Vector3.zero, 0.25f)
+                    .SetEase(Ease.InBack)
+                    .OnComplete(() =>
                     {
-                        string result = reader.ReadToEnd();
-                        Debug.Log("Upload successful:\n" + result);
+                        Destroy(uiRoot);
+                        ShowUploadingMenu(blocker, finalJson, rootRect);
+                    })
+                    .Play();
 
-                        string levelCode = "Unknown";
-                        try
-                        {
-                            var responseObj = JsonUtility.FromJson<UploadResponse>(result);
-                            levelCode = responseObj.code;
-                        }
-                        catch
-                        {
-                            Debug.LogWarning("Could not parse response code.");
-                        }
 
-                        if (rootRect == null)
-                        {
-                            Debug.LogError(" rootRect is null!");
-                            return;
-                        }
-                        if (blocker == null)
-                        {
-                            Debug.LogError(" blocker is null!");
-                            return;
-                        }
-
-                        rootRect.DOScale(Vector2.zero, 0.25f)
-                            .SetEase(Ease.InBack)
-                            .SetDelay(0.1f)
-                            .OnComplete(() =>
-                            {
-                                Debug.Log("▶ Showing success popup");
-                                ShowSuccessPopup(levelCode, blocker);
-                            })
-                            .Play();
-                    }
-                }
-                catch (WebException ex)
-                {
-                    if (ex.Response != null)
-                    {
-                        using (var reader = new StreamReader(ex.Response.GetResponseStream()))
-                            Debug.LogError(" Upload failed:\n" + reader.ReadToEnd());
-                    }
-                    else
-                    {
-                        Debug.LogError(" Upload failed: " + ex.Message);
-                    }
-                }
-
-                gameLevelUpload = null;
             });
+
 
 
             CreateButton("Cancel", -120f, () =>
@@ -365,6 +311,120 @@ namespace LovuxPatcher
             public string code;
             public string id;
         }
+
+        private static void ShowUploadingMenu(GameObject parent, string finalJson, RectTransform rootRect)
+        {
+            var uploadUI = new GameObject("UploadingUI");
+            uploadUI.transform.SetParent(parent.transform, false);
+
+            var rect = uploadUI.AddComponent<RectTransform>();
+            rect.anchorMin = new Vector2(0.5f, 0.5f);
+            rect.anchorMax = new Vector2(0.5f, 0.5f);
+            rect.pivot = new Vector2(0.5f, 0.5f);
+            rect.sizeDelta = new Vector2(400, 250);
+            rect.localScale = Vector3.zero;
+
+            Sprite menuSprite = Resources.FindObjectsOfTypeAll<Sprite>().FirstOrDefault(s => s.name == "Menu");
+            if (menuSprite != null)
+            {
+                var bgGO = new GameObject("MenuPanel");
+                bgGO.transform.SetParent(uploadUI.transform, false);
+                var bg = bgGO.AddComponent<Image>();
+                bg.sprite = menuSprite;
+                bg.type = Image.Type.Sliced;
+                bg.color = Color.white;
+
+                var bgRect = bgGO.GetComponent<RectTransform>();
+                bgRect.anchorMin = new Vector2(0.5f, 0.5f);
+                bgRect.anchorMax = new Vector2(0.5f, 0.5f);
+                bgRect.pivot = new Vector2(0.5f, 0.5f);
+                bgRect.sizeDelta = rect.sizeDelta;
+            }
+
+            var loadingTextGO = new GameObject("LoadingText");
+            loadingTextGO.transform.SetParent(uploadUI.transform, false);
+            var loadingText = loadingTextGO.AddComponent<Text>();
+            loadingText.text = "Uploading...";
+            loadingText.font = Resources.GetBuiltinResource<Font>("Arial.ttf");
+            loadingText.alignment = TextAnchor.MiddleCenter;
+            loadingText.color = Color.black;
+            loadingText.fontSize = 22;
+
+            var loadingTextRect = loadingTextGO.GetComponent<RectTransform>();
+            loadingTextRect.anchorMin = new Vector2(0.5f, 0.5f);
+            loadingTextRect.anchorMax = new Vector2(0.5f, 0.5f);
+            loadingTextRect.pivot = new Vector2(0.5f, 0.5f);
+            loadingTextRect.sizeDelta = new Vector2(200, 50);
+            loadingTextRect.localPosition = Vector3.zero;
+
+            rect.DOScale(Vector3.one, 0.25f).SetEase(Ease.OutBack).Play();
+
+            System.Threading.Tasks.Task.Run(() =>
+            {
+                try
+                {
+                    var request = (HttpWebRequest)WebRequest.Create("http://127.0.0.1:7000/lovux/api/levels");
+                    request.Method = "POST";
+                    request.ContentType = "application/json";
+
+                    byte[] bytes = Encoding.UTF8.GetBytes(finalJson);
+                    request.ContentLength = bytes.Length;
+                    using (var stream = request.GetRequestStream())
+                        stream.Write(bytes, 0, bytes.Length);
+
+                    var response = (HttpWebResponse)request.GetResponse();
+                    using (var reader = new StreamReader(response.GetResponseStream()))
+                    {
+                        string result = reader.ReadToEnd();
+                        Debug.Log("Upload successful:\n" + result);
+
+                        string levelCode = "Unknown";
+                        try
+                        {
+                            var responseObj = JsonUtility.FromJson<UploadResponse>(result);
+                            levelCode = responseObj.code;
+                        }
+                        catch
+                        {
+                            Debug.LogWarning("Could not parse response code.");
+                        }
+
+                        UnityMainThreadDispatcher.Instance().Enqueue(() =>
+                        {
+                            rect.DOScale(Vector3.zero, 0.25f).SetEase(Ease.InBack)
+                                .OnComplete(() =>
+                                {
+                                    Destroy(uploadUI);
+                                    ShowSuccessPopup(levelCode, parent);
+                                }).Play();
+                        });
+                    }
+                }
+                catch (WebException ex)
+                {
+                    UnityMainThreadDispatcher.Instance().Enqueue(() =>
+                    {
+                        rect.DOScale(Vector3.zero, 0.25f).SetEase(Ease.InBack)
+                            .OnComplete(() =>
+                            {
+                                Destroy(uploadUI);
+                                if (ex.Response != null)
+                                {
+                                    using (var reader = new StreamReader(ex.Response.GetResponseStream()))
+                                        Debug.LogError(" Upload failed:\n" + reader.ReadToEnd());
+                                }
+                                else
+                                {
+                                    Debug.LogError(" Upload failed: " + ex.Message);
+                                }
+                            }).Play();
+                    });
+                }
+
+                gameLevelUpload = null;
+            });
+        }
+
 
         private static void ShowSuccessPopup(string code, GameObject parent)
         {
