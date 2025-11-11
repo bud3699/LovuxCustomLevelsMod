@@ -16,7 +16,10 @@ namespace LovuxPatcher
             ModVersion = Info.Version;
             MelonLogger.Msg("Version: " + ModVersion);
 
-            SteamworksManager.Initialize();//
+            SaveManagerCustom.InitializeSave();
+            MelonLogger.Msg("Initialized CustomSaveManager");
+
+            SteamworksManager.Initialize();
 
             var harmony = new HarmonyLib.Harmony("com.bud3699.lovux.patch");
             //harmony.PatchAll(Assembly.GetExecutingAssembly());

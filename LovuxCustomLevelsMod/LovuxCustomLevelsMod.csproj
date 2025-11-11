@@ -307,6 +307,8 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Data\CustomLevelCompleteUI.cs" />
+    <Compile Include="Data\CustomSaveManager.cs" />
     <Compile Include="Data\GameLevelData.cs" />
     <Compile Include="Data\SteamworksManager.cs" />
     <Compile Include="Data\UIController.cs" />

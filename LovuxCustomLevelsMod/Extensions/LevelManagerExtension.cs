@@ -17,6 +17,9 @@ namespace LovuxPatcher
             if (Director.gameMode == GameMode.SandboxPlay)
             {
                 Debug.Log("Finished Custom Level"); //Here we need to add support for uploading level
+                Frame.instance?.PositiveFeedback();
+                yield return new WaitWhile(() => Frame.mexicanWave);
+                if (SteamworksManager.IsCool) { CustomLevelCompleteUI.Show(); }
             }
             if (Director.gameMode == GameMode.Game || Director.gameMode.ToString() == "3")
             {

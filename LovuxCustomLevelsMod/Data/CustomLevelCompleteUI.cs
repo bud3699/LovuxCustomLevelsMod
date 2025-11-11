@@ -186,14 +186,62 @@ namespace LovuxPatcher
 
             CreateButton("Submit", -70f, () =>
             {
-                if (SaveManagerCustom.CurrentData.playerName != SteamworksManager.GetSteamUsername().Trim()) SaveManagerCustom.UpdatePlayerName(SteamworksManager.GetSteamUsername().Trim());
-                if (string.IsNullOrEmpty(gameLevelUpload)) { Debug.LogError("❌ gameLevelUpload is empty or null!"); return; }
+                Debug.Log("Submit button clicked");
+
+                if (SaveManagerCustom.CurrentData == null)
+                {
+                    Debug.LogError(" SaveManagerCustom.CurrentData is null!");
+                    return;
+                }
+
+                if (string.IsNullOrEmpty(SteamworksManager.GetSteamUsername()))
+                {
+                    Debug.LogError(" SteamworksManager.GetSteamUsername() returned null or empty!");
+                    return;
+                }
+
+                if (SteamworksManager.SteamID == null)
+                {
+                    Debug.LogError(" SteamworksManager.SteamID is null!");
+                    return;
+                }
+
+                if (SaveManagerCustom.CurrentData.playerName != SteamworksManager.GetSteamUsername().Trim())
+                    SaveManagerCustom.UpdatePlayerName(SteamworksManager.GetSteamUsername().Trim());
+                if (string.IsNullOrEmpty(gameLevelUpload))
+                {
+                    Debug.LogError(" gameLevelUpload is empty or null!");
+                    return;
+                }
 
                 GameLevelData loadedLevel;
-                try { loadedLevel = JsonUtility.FromJson<GameLevelData>(gameLevelUpload); }
-                catch (Exception e) { Debug.LogError("Failed to parse level JSON: " + e.Message); return; }
+                try
+                {
+                    loadedLevel = JsonUtility.FromJson<GameLevelData>(gameLevelUpload);
+                }
+                catch (Exception e)
+                {
+                    Debug.LogError(" Failed to parse level JSON: " + e.Message);
+                    return;
+                }
 
-                if (loadedLevel == null) { Debug.LogError("Parsed GameLevelData is null!"); return; }
+                if (loadedLevel == null)
+                {
+                    Debug.LogError(" Parsed GameLevelData is null!");
+                    return;
+                }
+
+                if (string.IsNullOrEmpty(loadedLevel.entityData))
+                {
+                    Debug.LogError(" loadedLevel.entityData is null or empty!");
+                    return;
+                }
+
+                if (titleInput == null || descInput == null)
+                {
+                    Debug.LogError(" titleInput or descInput is not assigned!");
+                    return;
+                }
 
                 string entityDataEscaped = loadedLevel.entityData
                     .Replace("\\", "\\\\")
@@ -207,8 +255,18 @@ namespace LovuxPatcher
                     $"\"creator\":\"{SteamworksManager.GetSteamUsername().Trim()}\"," +
                     $"\"SteamID\":\"{SteamworksManager.SteamID.ToString().Trim()}\"," +
                     $"\"data\":{{" +
-                    $"\"entityData\":\"{entityDataEscaped}\"," +
-                    $"}}}}";
+                    $"\"entityData\":\"{entityDataEscaped}\"}}}}";
+
+                if (string.IsNullOrEmpty(SaveManagerCustom.CurrentData.privateKey))
+                {
+                    Debug.LogError(" privateKey is null or empty!");
+                    return;
+                }
+                if (string.IsNullOrEmpty(SaveManagerCustom.CurrentData.publicKey))
+                {
+                    Debug.LogError(" publicKey is null or empty!");
+                    return;
+                }
 
                 string signature = SaveManagerCustom.SignData(json, SaveManagerCustom.CurrentData.privateKey);
                 string finalJson =
@@ -245,11 +303,23 @@ namespace LovuxPatcher
                             Debug.LogWarning("Could not parse response code.");
                         }
 
+                        if (rootRect == null)
+                        {
+                            Debug.LogError(" rootRect is null!");
+                            return;
+                        }
+                        if (blocker == null)
+                        {
+                            Debug.LogError(" blocker is null!");
+                            return;
+                        }
+
                         rootRect.DOScale(Vector2.zero, 0.25f)
                             .SetEase(Ease.InBack)
                             .SetDelay(0.1f)
                             .OnComplete(() =>
                             {
+                                Debug.Log("▶ Showing success popup");
                                 ShowSuccessPopup(levelCode, blocker);
                             })
                             .Play();
@@ -260,11 +330,11 @@ namespace LovuxPatcher
                     if (ex.Response != null)
                     {
                         using (var reader = new StreamReader(ex.Response.GetResponseStream()))
-                            Debug.LogError("Upload failed:\n" + reader.ReadToEnd());
+                            Debug.LogError(" Upload failed:\n" + reader.ReadToEnd());
                     }
                     else
                     {
-                        Debug.LogError("Upload failed: " + ex.Message);
+                        Debug.LogError(" Upload failed: " + ex.Message);
                     }
                 }
 
